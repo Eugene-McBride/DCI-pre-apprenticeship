@@ -1,0 +1,29 @@
+--All the code below can be executed on Oracle's VM or Oracle Live SQL
+
+1.How many employees are assigned to each job position
+
+select count(*) as Employees, b.job_title
+from hr.employees a joinhr. jobs b on a.job_id=b.job_id
+group by b.job_title
+order by count(*) desc
+
+
+2.How much money has each of our customers have spent?
+
+with o as (
+  select customer_id, sum(order_total) as order_total
+  from oe.orders
+  group by customer_id
+  order by order_total desc
+  )
+select c.customer_id, cust_last_name || ', ' || cust_first_name as full_name, to_char(o.order_total, '199G999')
+from oe.customers left join o on c.customer_id=o.customer_id
+where order_total is not null
+order by desc
+
+
+3. Who are the longest and shortest employees that are still currently employed?
+
+select z.employee_id, z.first_name, z.last_name, m.end_date, to_char(z.hire_date, 'MM-DD-YYYY') as Hire_date, z.job_id
+from hr.employees z left join hr.job_history,m on z.employee_id = m.employee_id
+where m.end_date is null and hire_date ='07-JUN-02' or hire_date = '21-APR-08'
